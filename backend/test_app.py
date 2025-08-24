@@ -1,8 +1,9 @@
 from fastapi.testclient import TestClient
-from app import app
-from dotenv import load_dotenv
+from app import app, get_db
+from unittest.mock import MagicMock
 
-load_dotenv()
+# override db dependency with a mock
+app.dependency_overrides[get_db] = lambda: MagicMock()
 
 client = TestClient(app)
 
