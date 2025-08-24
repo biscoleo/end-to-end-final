@@ -8,6 +8,7 @@ import mlflow
 import mlflow.sklearn
 import os
 
+
 def main():
     # track ml runs
     mlflow.set_tracking_uri("file://" + os.path.abspath("mlruns"))
@@ -23,10 +24,12 @@ def main():
     )
 
     # define the pipeline
-    pipeline = Pipeline([
-        ("tfidf", TfidfVectorizer()),
-        ("clf", LogisticRegression(max_iter=1000))
-    ])
+    pipeline = Pipeline(
+        [
+            ("tfidf", TfidfVectorizer()),
+            ("clf", LogisticRegression(max_iter=1000)),
+        ]
+    )
     # start MLflow run
     with mlflow.start_run():
         # train the model pipeline
@@ -47,10 +50,11 @@ def main():
         mlflow.sklearn.log_model(
             sk_model=pipeline,
             name="model",
-            registered_model_name="ToxicCommentModel"
+            registered_model_name="ToxicCommentModel",
         )
         print(f"Validation accuracy: {acc:.4f}")
         print(f"Validation F1 score: {f1:.4f}")
+
 
 if __name__ == "__main__":
     main()

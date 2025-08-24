@@ -1,12 +1,16 @@
 import streamlit as st
 import pandas as pd
 import psycopg2
-from psycopg2.extras import RealDictCursor
 import os
-from visualizations import load_prediction_logs, plot_target_drift, plot_prediction_latency, calculate_metrics
+from visualizations import (
+    plot_target_drift,
+    plot_prediction_latency,
+    calculate_metrics,
+)
 
 
-# db connection using cache_resource (instead of opening a new connection each time. this way is much more efficient)
+# db connection using cache_resource
+# instead of opening a new connection each time
 @st.cache_resource
 def get_db_connection():
     return psycopg2.connect(
@@ -15,8 +19,9 @@ def get_db_connection():
         user=os.getenv("DB_USER"),
         password=os.getenv("DB_PASSWORD"),
         port=os.getenv("DB_PORT", "5432"),
-        sslmode='require'
+        sslmode="require",
     )
+
 
 # load latest prediction logs -- up to 5000
 @st.cache_data(ttl=600)
@@ -29,6 +34,7 @@ def load_prediction_logs(_conn):
     """
     return pd.read_sql(query, _conn)
 
+
 # STREAMLIT UI
 st.set_page_config(layout="wide")
 st.title("Toxicity Model Monitoring Dashboard")
@@ -38,7 +44,7 @@ try:
     conn = get_db_connection()
     logs_df = load_prediction_logs(conn)
 except Exception as e:
-    st.error(f"Failed to load prediction logs: {e}")
+    st.error(f"Error loading logs: {e}")
     st.stop()
 
 # handle empty logs

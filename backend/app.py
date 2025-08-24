@@ -2,7 +2,7 @@ from fastapi import FastAPI, HTTPException, Depends
 from pydantic import BaseModel, Field
 import joblib
 from pathlib import Path
-from datetime import datetime, timezone
+from datetime import datetime
 import time
 from typing import Optional
 import os
@@ -24,13 +24,16 @@ DB_NAME = os.getenv("DB_NAME")
 
 DB_PORT = os.getenv("DB_PORT", "5432")  # default to 5432 if missing
 
-DATABASE_URL = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+DATABASE_URL = (
+    f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+)
 
 
 # SQLAlchemy to set up connection to RDS
 engine = create_engine(DATABASE_URL, connect_args={"sslmode": "require"})
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
+
 
 # logging predictions
 class PredictionLog(Base):
@@ -40,13 +43,13 @@ class PredictionLog(Base):
     input_text = Column(String, nullable=False)
     predicted = Column(String, nullable=False)
     true_label = Column(String, nullable=True)
-    prediction_latency_ms = Column(Float, nullable=True) 
+    prediction_latency_ms = Column(Float, nullable=True)
 
 
 # create tables if they don't exist
 Base.metadata.create_all(bind=engine)
 
-############### Set up API
+# Set up API
 # FastAPI app
 app = FastAPI()
 
@@ -57,12 +60,16 @@ try:
 except Exception as e:
     raise RuntimeError(f"Failed to load model: {e}")
 
+
 # pydantic
 class TextInput(BaseModel):
     text: str = Field(..., min_length=1)
     true_label: Optional[str] = None
+
+
 class PredictionResponse(BaseModel):
     prediction: str
+
 
 # get DB session
 def get_db():
@@ -72,14 +79,17 @@ def get_db():
     finally:
         db.close()
 
+
 # API ENDPOINTS -----
 @app.get("/")
 def root():
     return {"message": "Welcome to the Toxic Comment Classification API!"}
 
+
 @app.get("/health")
 def health():
     return {"status": "ok"}
+
 
 @app.post("/predict", response_model=PredictionResponse)
 def predict(input: TextInput, db: Session = Depends(get_db)):
@@ -87,7 +97,7 @@ def predict(input: TextInput, db: Session = Depends(get_db)):
         start_time = time.time()
         # use model to make predicitons
         pred_raw = model.predict([input.text])[0]
-        pred = str(pred_raw) 
+        pred = str(pred_raw)
         # latency to graph later in monitoring dashboard
         latency = (time.time() - start_time) * 1000
 
@@ -95,7 +105,7 @@ def predict(input: TextInput, db: Session = Depends(get_db)):
             input_text=input.text,
             predicted=pred,
             true_label=input.true_label,
-            prediction_latency_ms=latency
+            prediction_latency_ms=latency,
         )
         db.add(log_entry)
         db.commit()
@@ -106,5 +116,5 @@ def predict(input: TextInput, db: Session = Depends(get_db)):
     except Exception as e:
         # log traceback error to help w debugging
         tb = traceback.format_exc()
-        print(f"Error during prediction or DB commit:\n{tb}")
+        print(f"Error during prediction or DB commit:\n{e}\n{tb}")
         raise HTTPException(status_code=500, detail="Internal Server Error")

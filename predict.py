@@ -19,7 +19,7 @@
 #         "You are an idiot and should shut up.",
 #         "Thanks for the update, I appreciate your help."
 #     ]
-    
+
 #     for idx, comment in enumerate(test_comments, 1):
 #         prediction = predict(comment)
 #         print(f"Test comment {idx}: \"{comment}\"")
