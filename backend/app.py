@@ -4,8 +4,8 @@ import joblib
 from pathlib import Path
 from datetime import datetime
 import time
-from typing import Optional
 import os
+from typing import Optional
 from dotenv import load_dotenv
 import traceback
 from sqlalchemy import create_engine, Column, Integer, String, DateTime, Float
