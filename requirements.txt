@@ -1,0 +1,40 @@
+# Core ML
+pandas
+numpy
+scikit-learn
+xgboost
+
+# FastAPI backend
+fastapi
+uvicorn
+pydantic
+python-dotenv
+joblib
+
+# Experiment tracking
+mlflow
+
+# Frontend (Streamlit dashboard)
+streamlit
+
+# Monitoring
+matplotlib
+seaborn
+plotly
+
+# AWS & DB (pick based on what you're using)
+boto3
+sqlalchemy  # for RDS/Postgres (SQL)
+psycopg2-binary  # Postgres driver
+# or
+# boto3
+# boto3-stubs[dynamodb]  # For DynamoDB (optional)
+
+# Testing & linting
+pytest
+requests
+ruff  # or flake8
+
+# Dev tools
+ipykernel
+jupyter
