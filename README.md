@@ -8,7 +8,7 @@ The system includes:
 
 - **Experiment Tracking & Model Versioning:** Basic integration for tracking model experiments and managing model versions.
 - **ML Model Backend:** A FastAPI service that loads the latest production model and serves prediction requests.
-- **Persistent Data Store:** AWS-managed database (RDS or DynamoDB) that logs prediction requests and user feedback for monitoring.
+- **Persistent Data Store:** AWS-managed database (RDS) that logs prediction requests and user feedback for monitoring.
 - **Frontend Interface:** A user-facing Streamlit application to interact with the model.
 - **Model Monitoring Dashboard:** A separate Streamlit dashboard that visualizes model performance, detects data drift, and monitors prediction quality.
 - **CI/CD Pipeline:** Automated testing and linting using GitHub Actions to ensure code quality on every pull request.
@@ -41,6 +41,13 @@ The entire system is containerized and deployed across multiple EC2 instances fo
 - Connects to AWS-managed database to log all prediction requests and user feedback.
 - Supports caching of frequent predictions.
 
+![Alt text](visuals/fastapi.png)
+
+### RDS Instance
+![Alt text](visuals/toxicitydb.png)
+![Alt text](visuals/db-count.png)
+
+
 ### Frontend Interface
 
 - Streamlit application allowing users to input data and receive predictions.
@@ -55,10 +62,14 @@ The entire system is containerized and deployed across multiple EC2 instances fo
   - Live model accuracy based on user feedback.
   - Alerts on performance degradation.
 
+![Alt text](visuals/monitoring.png)
+
+
+
 ### CI/CD Pipeline
 
 - GitHub Actions workflow automates:
-  - Code linting (using flake8 or ruff).
+  - Code linting (using flake8).
   - Running unit and integration tests via pytest.
 - Ensures only quality code is merged into the main branch.
 
@@ -83,6 +94,10 @@ The entire system is containerized and deployed across multiple EC2 instances fo
    - Port 22 for SSH (restricted to your IP).
    - Port 8000 for FastAPI backend.
    - Port 8501 for Streamlit frontend and monitoring dashboards.
+
+![Alt text](visuals/inbound-security.png)
+
+
 3. SSH into each instance using your `.pem` key.
 
 ### Installing Dependencies
@@ -105,9 +120,23 @@ docker run -d -p <port>:<port> --name <container-name> --env-file .env <componen
 
 ```
 
+![Alt text](visuals/instances.png)
+
+![Alt text](visuals/ml-frontend-container.png)
+
+![Alt text](visuals/ml-monitoring-container.png)
+
+
+
+
+
+
+
+
+
 ## CI/CD Pipeline
 
-- Configured with GitHub Actions to automate testing and linting on pull requests.
+- Configured with GitHub Actions to automate testing and linting on pushes.
 - Ensures that only passing, high-quality code is merged.
 
 I used these commands to test and reformat the code locally too:
